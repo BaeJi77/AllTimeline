@@ -4,7 +4,7 @@ var categoryDAO = require('../DAO/category');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    categoryDAO.hello();
+    console.log("db 만들었따.");
     res.render('index', { title: 'Express' });
 });
 
