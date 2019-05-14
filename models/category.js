@@ -1,7 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('category', {
         category_name: {
-        name: {
             type: DataTypes.STRING(20),
             allowNull: false,
             unique: true,
@@ -9,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         type: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
-        }
+        },
     }, {
         timestamps: true,
     });
