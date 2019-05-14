@@ -20,4 +20,5 @@ db.Event.belongsTo(db.Category);
 
 sequelize.sync();
 
+
 module.exports = db;
