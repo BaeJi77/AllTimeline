@@ -12,5 +12,13 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.Category = require('./category.js')(sequelize, Sequelize);
+db.Event = require('./event')(sequelize, Sequelize);
+
+//Shop 1:N Shop
+db.Category.hasMany(db.Event);
+db.Event.belongsTo(db.Category);
+
+sequelize.sync();
+
 
 module.exports = db;
