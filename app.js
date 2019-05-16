@@ -6,6 +6,8 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var searchRouter = require('./routes/search');//뭔가이상한듯
+//여기추가
 
 var sequelize = require('./models/index').sequelize;
 
@@ -26,6 +28,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/search', searchRouter);
+//여기 추가
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
