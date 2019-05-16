@@ -4,10 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var searchRouter = require('./routes/search');//뭔가이상한듯
-//여기추가
+
+var indexRouter = require('./routes/categories');
+var searchRouter = require('./routes/search');
 
 var sequelize = require('./models/index').sequelize;
 
@@ -26,8 +25,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/categories', indexRouter);
 app.use('/search', searchRouter);
 //여기 추가
 

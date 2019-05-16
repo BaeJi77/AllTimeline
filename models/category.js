@@ -1,12 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('category', {
         category_name: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING,
             allowNull: false,
             unique: true,
         },
         type: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: DataTypes.STRING,
             allowNull: false,
         },
     }, {
