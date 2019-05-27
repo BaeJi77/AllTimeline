@@ -7,7 +7,7 @@ const puppeteer = require('puppeteer');
 
     await page.goto('https://people.search.naver.com/', {waitUntil: 'networkidle2'});
     var gogo = 'https://people.search.naver.com/search.naver';   //link url 병합위함
-    await page.type('#nx_query', '아인슈타인');
+    await page.type('#nx_query', '김민성');
 
     const allResultsSelector = '#search_form > fieldset > input';
     await page.waitForSelector(allResultsSelector);
@@ -38,7 +38,7 @@ const puppeteer = require('puppeteer');
 
     console.log(dtArray);
     console.log("here:", dtArray[0]);
-
+    console.log(dtArray.length);
     if (dtArray.length === 1) {
         //해당 page로 link를 가지고 접근해서 data가져옴{경력사항}
     } else {
