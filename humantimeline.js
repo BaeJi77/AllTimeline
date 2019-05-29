@@ -16,23 +16,26 @@ const fs = require('fs');
 
     var dtArray = await page.evaluate(() => {
         var listing = document.querySelectorAll(`li`);
-        var link = document.querySelectorAll(`a.href`);
+        //var link = document.querySelectorAll(`a.href`);
 
         var titleLinkArray = [];
         for (var i = 0; i < listing.length; i++) {
             titleLinkArray[i] = {
                 List: listing[i].innerText.trim(),
-                link: link[i].href
+                //link: link[i].href
             };
         }
         return titleLinkArray;
     });
 
-    console.log(dtArray);
+    //console.log(dtArray);
+    for (var i = 0; i < dtArray.length; i++) {
+        console.log(dtArray[i]);
+    }
 
     console.log(dtArray.length);
 
-    exportToExcel(dtArray);
+    //exportToExcel(dtArray);
 
     if (dtArray.length === 1) {
         //해당 page로 link를 가지고 접근해서 data가져옴{경력사항}
