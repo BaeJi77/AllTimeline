@@ -12,13 +12,16 @@ router.post('/personDetail', naverSearchDetail);
 async function naverSearch(req, res, next) {
     let personSearchKeyword = req.body.personName;
     let searchResult = await searchService.searchPerson(personSearchKeyword);
+    console.log(searchResult);
     res.status(200).send(searchResult);
 }
 
 
 async function naverSearchDetail(req, res, next) {
     let choiceUrl = req.body.detailUrl;
+    console.log(choiceUrl);
     let searchResult = await searchService.searchDetailUrl(choiceUrl);
+    console.log("Consoele " + searchResult);
     res.status(200).send(searchResult);
 }
 

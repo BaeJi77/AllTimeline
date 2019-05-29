@@ -30,7 +30,7 @@ const fs = require('fs');
 
     //console.log(dtArray);
     for (var i = 0; i < dtArray.length; i++) {
-        console.log(dtArray[i]);
+        //      console.log(dtArray[i]);
     }
 
     console.log(dtArray.length);
