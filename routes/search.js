@@ -2,11 +2,28 @@ var express = require('express');
 var router = express.Router();
 const puppeteer = require('puppeteer');
 
-/* GET home page. */
+var searchService = require('../services/searchService');
+
 router.get('/', running);
+router.post('/person', naverSearch);
+router.post('/personDetail', naverSearchDetail);
+
+
+async function naverSearch(req, res, next) {
+    let personSearchKeyword = req.body.personName;
+    let searchResult = await searchService.searchPerson(personSearchKeyword);
+    res.status(200).send(searchResult);
+}
+
+
+async function naverSearchDetail(req, res, next) {
+    let choiceUrl = req.body.detailUrl;
+    let searchResult = await searchService.searchDetailUrl(choiceUrl);
+    res.status(200).send(searchResult);
+}
 
 //실행함수만들기
-async function running() {
+async function running(req, res, next) {
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
