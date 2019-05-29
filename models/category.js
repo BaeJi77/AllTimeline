@@ -6,10 +6,11 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
         },
         type: {
-            type: DataTypes.STRING,
-            //allowNull: false,
+            type: DataTypes.INTEGER,
+            allowNull: false,
         },
     }, {
         timestamps: true,
     });
 };
+
