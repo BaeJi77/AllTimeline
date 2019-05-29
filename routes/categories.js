@@ -10,7 +10,10 @@ router.post('/', addCategory);
 
 async function getAllCategoriesNames(req, res, next) {
     let allCategory = await categoryService.findAll();
-    res.status(200).send(allCategory);
+    //let result = {result : "HI"};
+    console.log(allCategory);
+    console.log(typeof (allCategory));
+    res.status(200).json(allCategory);
 }
 
 async function getSelectCategory(req, res, next) {
@@ -20,10 +23,10 @@ async function getSelectCategory(req, res, next) {
 }
 
 async function addCategory(req, res, next) {
-    let categoryName = req.body.name;
-    let categoryType = req.body.type;
-    let result = await categoryService.create(categoryName, categoryType);
-    res.status(201).send(result);
+    //  let categoryName = req.body.name;
+    //   let categoryType = req.body.type;
+//    let result = await categoryService.create(categoryName, categoryType);
+    //   res.status(201).send(result);
 }
 
 module.exports = router;

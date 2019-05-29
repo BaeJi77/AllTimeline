@@ -8,6 +8,9 @@ var logger = require('morgan');
 var indexRouter = require('./routes/categories');
 var searchRouter = require('./routes/search');
 
+var test = require('./humantimeline');
+
+
 var sequelize = require('./models/index').sequelize;
 
 var app = express();
@@ -44,5 +47,6 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+
 
 module.exports = app;
