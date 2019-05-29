@@ -47,20 +47,19 @@ module.exports = {
     searchDetailUrl: async function (Url) {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        console.log(Url);
         await page.goto(Url, {waitUntil: 'networkidle2'});
 
         const allResultsSelector = '#content > div > div.record_wrap > div:nth-child(2)';
         await page.waitForSelector(allResultsSelector);
 
         var dtArray = await page.evaluate(() => {
-            var titleNodeList = document.querySelectorAll(`div.record`);
+            // var titleNodeList = document.querySelectorAll(`div.record`);
             var date = document.querySelectorAll(`div.record > dl > dt`);
             var content = document.querySelectorAll(`div.record > dl > dd`);
             var titleLinkArray = [];
-            for (var i = 0; i < titleNodeList.length; i++) {
+            for (var i = 0; i < date.length; i++) {
                 titleLinkArray[i] = {
-                    title: titleNodeList[i].innerText.trim(),
+                    // title: titleNodeList[i].innerText.trim(),
                     Date: date[i].innerText.trim(),
                     Content: content[i].innerText.trim()
                 };
@@ -69,7 +68,8 @@ module.exports = {
         });
         console.log(dtArray.length);
         console.log(dtArray);
-
         browser.close();
+        return dtArray;
+
     }
 };
