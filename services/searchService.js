@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
+const yearParser = require('../modules/parser');
 
+// TODO : 1. 없으면 없다고 처리하기
 module.exports = {
     searchPerson: async function (personSearchKeyword) {
         const browser = await puppeteer.launch();
@@ -7,6 +9,8 @@ module.exports = {
         await page.goto('https://people.search.naver.com/', {waitUntil: 'networkidle2'});
         var gogo = 'https://people.search.naver.com/search.naver';   //link url 병합위함
         await page.type('#nx_query', personSearchKeyword);
+
+        console.log(personSearchKeyword);
 
         const allResultsSelector = '#search_form > fieldset > input';
         await page.waitForSelector(allResultsSelector);
@@ -44,6 +48,10 @@ module.exports = {
         return dtArray;
     },
 
+
+    /*
+    * TODO : 1. 디비 저장하는 부분 / 2. 날짜 부분 처리 안된 것 정리하기 / 3. 이전에 데이터가 있었는지 확인하는 루틴(db 구조 변경 요구)
+    * */
     searchDetailUrl: async function (Url) {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -51,6 +59,8 @@ module.exports = {
 
         const allResultsSelector = '#content > div > div.record_wrap > div:nth-child(2)';
         await page.waitForSelector(allResultsSelector);
+
+        console.log(Url);
 
         var dtArray = await page.evaluate(() => {
             // var titleNodeList = document.querySelectorAll(`div.record`);
@@ -66,7 +76,9 @@ module.exports = {
             }
             return titleLinkArray;
         });
+
         console.log(dtArray.length);
+        console.log(yearParser.startEndYearParsing(dtArray[0]));
         console.log(dtArray);
         browser.close();
         return dtArray;

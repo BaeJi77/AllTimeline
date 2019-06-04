@@ -25,14 +25,10 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         start_date: {
-            type: DataTypes.DATE,
-            //           allowNull: false,
-            defaultValue: DataTypes.NOW,
+            type: DataTypes.INTEGER,
         },
         end_date: {
-            type: DataTypes.DATE,
-            //           allowNull: false,
-            defaultValue: sequelize.NOW,
+            type: DataTypes.INTEGER,
         },
         weight: {
             type: DataTypes.INTEGER,
