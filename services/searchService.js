@@ -80,7 +80,8 @@ module.exports = {
         console.log(dtArray.length);
         console.log(yearParser.startEndYearParsing(dtArray[0]));
         console.log(dtArray);
-
         browser.close();
+        return dtArray;
+
     }
 };
