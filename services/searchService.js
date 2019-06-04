@@ -60,6 +60,8 @@ module.exports = {
         const allResultsSelector = '#content > div > div.record_wrap > div:nth-child(2)';
         await page.waitForSelector(allResultsSelector);
 
+        console.log(Url);
+
         var dtArray = await page.evaluate(() => {
             // var titleNodeList = document.querySelectorAll(`div.record`);
             var date = document.querySelectorAll(`div.record > dl > dt`);
@@ -74,6 +76,7 @@ module.exports = {
             }
             return titleLinkArray;
         });
+
         console.log(dtArray.length);
         console.log(yearParser.startEndYearParsing(dtArray[0]));
         console.log(dtArray);
