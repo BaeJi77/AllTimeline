@@ -76,7 +76,7 @@ module.exports = {
             //const newbrowser = await puppeteer.launch();
             //page = await newbrowser.newPage();
             await page.goto(imgurl, {waitUntil: 'networkidle2'});
-            console.log("Imgurl open:" + imgurl);
+            //console.log("Imgurl open:" + imgurl);
 
             await page.waitForSelector(profilePictureSelector);
             let profilePiceutre = await page.evaluate(() => {
