@@ -1,12 +1,11 @@
 const puppeteer = require('puppeteer');
 const yearParser = require('../modules/parser');
 
-// TODO : 1. 없으면 없다고 처리하기
 module.exports = {
     searchPerson: async function (personSearchKeyword) {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto('https://people.search.naver.com/', {waitUntil: 'networkidle2'});
+        await page.goto('https://people.search.naver.com/', {waitUntil: 'networkidle2', timeout: 5000});
         var gogo = 'https://people.search.naver.com/search.naver';   //link url 병합위함
         await page.type('#nx_query', personSearchKeyword);
 
@@ -17,7 +16,13 @@ module.exports = {
         await page.click(allResultsSelector);
 
         const resultSelector = 'a.name';
-        await page.waitForSelector(resultSelector);
+        try {
+            await page.waitForSelector(resultSelector, {timeout: 3000});
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+
         var dtArray = await page.evaluate(() => {
             var titleNodeList = document.querySelectorAll(`a.name`);
             var job = document.querySelectorAll(`span.sub`);
@@ -37,51 +42,96 @@ module.exports = {
             dtArray[i].link = gogo + dtArray[i].link;
         }
 
-        // if (dtArray.length === 1) {
-        //     //해당 page로 link를 가지고 접근해서 data가져옴{경력사항}
-        // } else {
-        //     //안쓰로 누구를 찾는가 보여주고
-        //     // 해당 data에 대한 link 접근후 data가져옴
-        // }
-
         browser.close();
         return dtArray;
     },
 
 
     /*
-    * TODO : 1. 디비 저장하는 부분 / 2. 날짜 부분 처리 안된 것 정리하기 / 3. 이전에 데이터가 있었는지 확인하는 루틴(db 구조 변경 요구)
+    * TODO : 1. 디비 저장하는 부분 / 2. 이전에 데이터가 있었는지 확인하는 루틴(db 구조 변경 요구) / 3. 사진 주기
     * */
     searchDetailUrl: async function (Url) {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto(Url, {waitUntil: 'networkidle2'});
 
-        const allResultsSelector = '#content > div > div.record_wrap > div:nth-child(2)';
-        await page.waitForSelector(allResultsSelector);
-
         console.log(Url);
 
+        const allResultsSelector = '#content > div > div.record_wrap > div:nth-child(2)';
+        const profilePictureSelector = '#content > div > div.profile_wrap > div.thmb_wrap > a.thmb';
+        const lifeDateSelector = '#content > div > div.profile_wrap > div.profile_dsc';
+
+        await page.waitForSelector(profilePictureSelector);
+        let profilePicture = await page.evaluate(() => {
+            return document.querySelector('img.thmb_img').getAttribute('src');
+        });
+
+        await page.waitForSelector(lifeDateSelector);
+        let lifeDate = await page.evaluate(() => {
+            var profileCategories = document.querySelectorAll('dl.dsc > dt');
+            var profileContents = document.querySelectorAll('dl.dsc > dd');
+            var targetIndex = 0;
+            for (var i = 0; i < profileCategories.length; i++) {
+                if (profileCategories[i].innerText === "출생" || profileCategories[i].innerText === "출생-사망") {
+                    targetIndex = i;
+                    break;
+                }
+            }
+            return profileContents[targetIndex].innerText;
+        });
+
+        var lifeDateSplit = lifeDate.split('-');
+        var birthYear = yearParser.makeBirthDate(lifeDateSplit[0]);
+        var deathYear = -1;
+        if (lifeDateSplit.length === 2)
+            deathYear = yearParser.makeDeathDate(lifeDateSplit[1]);
+
+        await page.waitForSelector(allResultsSelector);
         var dtArray = await page.evaluate(() => {
-            // var titleNodeList = document.querySelectorAll(`div.record`);
             var date = document.querySelectorAll(`div.record > dl > dt`);
             var content = document.querySelectorAll(`div.record > dl > dd`);
             var titleLinkArray = [];
             for (var i = 0; i < date.length; i++) {
-                titleLinkArray[i] = {
-                    // title: titleNodeList[i].innerText.trim(),
-                    Date: date[i].innerText.trim(),
-                    Content: content[i].innerText.trim()
+                if (date[i].innerText.trim() === " " || date[i].innerText.trim() === '' || date[i].innerText.trim() === "연도없음") {
+                    continue;
+                }
+                var temp = {
+                    date: date[i].innerText.trim(),
+                    content: content[i].innerText.trim()
                 };
+                titleLinkArray.push(temp);
             }
             return titleLinkArray;
         });
 
-        console.log(dtArray.length);
-        console.log(yearParser.startEndYearParsing(dtArray[0]));
-        console.log(dtArray);
-        browser.close();
-        return dtArray;
+        var returnDateContent = [];
+        for (var i = 0; i < dtArray.length; i++) {
+            var object = dtArray[i];
+            var newObject = {};
+            newObject = yearParser.startEndYearParsing(object.date);
+            newObject.start = yearParser.convertYearMonthToYear(newObject.start.trim());
+            newObject.end = yearParser.convertYearMonthToYear(newObject.end.trim());
+            newObject.event_name = object.content;
+            if (newObject.start === "-1" && newObject.end === "-1")
+                continue;
+            returnDateContent.push(newObject);
+        }
 
+        var birthEvent = {};
+        birthEvent.start = birthYear;
+        birthEvent.end = -1;
+        birthEvent.event_name = "출생";
+        returnDateContent.push(birthEvent);
+
+        if (lifeDateSplit.length === 2) {
+            var deathEvent = {};
+            deathEvent.start = deathYear;
+            deathEvent.end = -1;
+            deathEvent.event_name = "사망";
+            returnDateContent.push(deathEvent);
+        }
+
+        browser.close();
+        return returnDateContent;
     }
 };
