@@ -10,22 +10,22 @@ const ObjectsToCsv = require('objects-to-csv');
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    await page.goto('https://www.popularmechanics.com/technology/g24668233/best-inventions/?slide=2', {waitUntil: 'networkidle2'});
+    await page.goto('https://en.wikipedia.org/wiki/Timeline_of_historic_inventions', {waitUntil: 'networkidle2'});
 
-    const allResultsSelector = 'body > div.site-content > div.content-container.slideshow-container.new-tablet-enabled > div.slideshow-outer > div.slideshow-inner.inited.listview-active > div.slide-container';
+    const allResultsSelector = '#\\32 0th_century';
     await page.waitForSelector(allResultsSelector);
 
     var dtArray = await page.evaluate(() => {
-        var listing = document.querySelectorAll(`div.slideshow-slide-hed`);
-        var content = document.querySelectorAll('div.slideshow-slide-dek > p');
-        var src = document.querySelectorAll('div.slide-media-outer > div.slide-media slide-media-4x6 > div.slide-media-inner > span.slide-image-wrap > picture > img');
+        var listing = document.querySelectorAll(`li`);
+        // var content = document.querySelectorAll('div.slideshow-slide-dek > p');
+        //var src = document.querySelectorAll('div.slide-media-outer > div.slide-media slide-media-4x6 > div.slide-media-inner > span.slide-image-wrap > picture > img');
         //var link = document.querySelectorAll(`a.href`);
 
         var titleLinkArray = [];
         for (var i = 0; i < listing.length; i++) {
             titleLinkArray[i] = {
                 List: listing[i].innerText.trim(),
-                Content: content[i].innerText.trim(),
+                //    Content: content[i].innerText.trim(),
                 //SRC : src[i].src()
                 //link: link[i].href
             };
