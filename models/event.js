@@ -2,24 +2,19 @@ module.exports = (sequelize, DataTypes) => {
     return sequelize.define('event', {
         event_name: {
             type: DataTypes.STRING(20),
-//            allowNull: false,
             unique: true,
         },
         descriptor: {
             type: DataTypes.STRING,
-//            allowNull: true,
         },
         detail_url: {
             type: DataTypes.STRING,
-//            allowNull: false,
             validate: {
                 isUrl: true
             }
         },
-
         picture: {
             type: DataTypes.STRING,
-            //           allowNull: false,
             validate: {
                 isUrl: true
             }
