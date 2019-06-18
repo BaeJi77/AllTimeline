@@ -1,24 +1,15 @@
-const {Category} = require('../models');
+const categoryRepository = require('../repositories/categoryRepository');
 
 module.exports = {
-    findAll: async function () {
-        let result = await Category.findAll();
-        return result;
+    findAllCategories: async function () {
+        return await categoryRepository.findAllCategoryNames();
     },
 
-    findOne: async function (categoryId) {
-        let result = await Category.findOne({
-            where: {
-                id: categoryId
-            }
-        });
-        return result;
+    findDetailCategory: async function (categoryId) {
+        return await categoryRepository.findOneCategoryById(categoryId);
     },
 
     create: async function (name, type) {
-        return Category.create({
-            category_name: name,
-            type: type
-        });
+        return categoryRepository.createCategoryWithNameAndType(name, type);
     }
 };
