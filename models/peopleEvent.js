@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('event', {
+    return sequelize.define('peopleEvent', {
         event_name: {
             type: DataTypes.STRING(20),
             unique: true,
