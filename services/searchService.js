@@ -1,6 +1,24 @@
 const puppeteer = require('puppeteer');
 const yearParser = require('../modules/parser');
 
+class Queue {
+    constructor() {
+        this._arr = [];
+    }
+
+    enqueue(item) {
+        this._arr.push(item);
+    }
+
+    dequeue() {
+        return this._arr.shift();
+    }
+
+    size() {
+        return this._arr.length;
+    }
+}
+
 module.exports = {
     searchPerson: async function (personSearchKeyword) {
         const browser = await puppeteer.launch();
@@ -23,7 +41,10 @@ module.exports = {
             return [];
         }
 
+        await page.waitForSelector('#content > div > div.result_section > div.result_content');
+
         var dtArray = await page.evaluate(() => {
+            //var img = document.querySelectorAll('img.thmb_img');
             var titleNodeList = document.querySelectorAll(`a.name`);
             var job = document.querySelectorAll(`span.sub`);
             var profile = document.querySelectorAll(`dl`);
@@ -33,16 +54,46 @@ module.exports = {
                     title: titleNodeList[i].innerText.trim(),
                     job: job[i].innerText.trim(),
                     link: titleNodeList[i].getAttribute("href"),
-                    profile: profile[i].innerText.trim()
+                    profile: profile[i].innerText.trim(),
+                    imgurl: ""
                 };
             }
             return titleLinkArray;
         });
+
+        var qu = new Queue();
         for (var i = 0; i < dtArray.length; i++) {
             dtArray[i].link = gogo + dtArray[i].link;
+            qu.enqueue(dtArray[i].link);
         }
 
+        const profilePictureSelector = '#content > div > div.profile_wrap > div.thmb_wrap ';
+
+        var imgurl = [];
+        var imgtmp = new Queue();
+        while (qu.size() != 0) {
+            var imgurl = qu.dequeue();
+            //const newbrowser = await puppeteer.launch();
+            //page = await newbrowser.newPage();
+            await page.goto(imgurl, {waitUntil: 'networkidle2'});
+            //console.log("Imgurl open:" + imgurl);
+
+            await page.waitForSelector(profilePictureSelector);
+            let profilePiceutre = await page.evaluate(() => {
+                if (document.querySelector('img.thmb_img') == null) return -1;
+                return document.querySelector('img.thmb_img').getAttribute('src');
+            });
+
+            imgtmp.enqueue(profilePiceutre);
+            //browser.close();
+
+        }
         browser.close();
+
+        for (var i = 0; i < dtArray.length; i++) {
+            dtArray[i].imgurl = imgtmp.dequeue();
+        }
+
         return dtArray;
     },
 
@@ -58,13 +109,13 @@ module.exports = {
         console.log(Url);
 
         const allResultsSelector = '#content > div > div.record_wrap > div:nth-child(2)';
-        const profilePictureSelector = '#content > div > div.profile_wrap > div.thmb_wrap > a.thmb';
+        //const profilePictureSelector = '#content > div > div.profile_wrap > div.thmb_wrap > a.thmb';
         const lifeDateSelector = '#content > div > div.profile_wrap > div.profile_dsc';
 
-        await page.waitForSelector(profilePictureSelector);
-        let profilePicture = await page.evaluate(() => {
-            return document.querySelector('img.thmb_img').getAttribute('src');
-        });
+        // await page.waitForSelector(profilePictureSelector);
+        // let profilePicture = await page.evaluate(() => {
+        //     return document.querySelector('img.thmb_img').getAttribute('src');
+        // });
 
         await page.waitForSelector(lifeDateSelector);
         let lifeDate = await page.evaluate(() => {
