@@ -23,8 +23,8 @@ db.CategoryEvent.belongsTo(db.Category);
 
 
 //People 1 : N Event
-db.People.hasMany(db.PeopleEvent);
-db.PeopleEvent.belongsTo(db.People);
+db.People.hasMany(db.PeopleSearch);
+db.PeopleSearch.belongsTo(db.People);
 
 db.PeopleSearch.hasMany(db.PeopleEvent);
 db.PeopleEvent.belongsTo(db.PeopleSearch);
