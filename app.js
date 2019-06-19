@@ -5,8 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 
-var indexRouter = require('./routes/categories');
-var searchRouter = require('./routes/search');
+var indexRouter = require('./routes/categoryRouter');
+var searchRouter = require('./routes/searchRouter');
 
 var sequelize = require('./models/index').sequelize;
 

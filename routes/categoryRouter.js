@@ -2,21 +2,21 @@ var express = require('express');
 var router = express.Router();
 var categoryService = require('../services/categoryService');
 
-router.get('/', getAllCategoriesNames);
-router.get('/:id', getSelectCategory);
+router.get('/', getAllCategories);
+router.get('/:id', getCategory);
 router.post('/', addCategory);
 
 
-async function getAllCategoriesNames(req, res, next) {
-    let allCategory = await categoryService.findAll();
+async function getAllCategories(req, res, next) {
+    let allCategory = await categoryService.findAllCategories();
     console.log(typeof (allCategory));
     res.status(200).json(allCategory);
 }
 
 
-async function getSelectCategory(req, res, next) {
+async function getCategory(req, res, next) {
     let categoryId = req.params.id;
-    let selectCategory = await categoryService.findOne(categoryId);
+    let selectCategory = await categoryService.findDetailCategory(categoryId);
     res.status(200).send(selectCategory);
 }
 
