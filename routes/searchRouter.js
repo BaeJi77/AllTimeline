@@ -7,6 +7,7 @@ var searchService = require('../services/searchService');
 router.get('/', running);
 router.post('/person', naverSearch);
 router.post('/personDetail', naverSearchDetail);
+router.post('/history', HistorySearchDetail);
 
 
 async function naverSearch(req, res, next) {
@@ -22,6 +23,5 @@ async function naverSearchDetail(req, res, next) {
     let searchResult = await searchService.searchDetailUrl(peopleSearchId, choiceUrl);
     res.status(200).send(searchResult);
 }
-
 
 module.exports = router;

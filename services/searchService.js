@@ -1,5 +1,10 @@
 const puppeteer = require('puppeteer');
 const yearParser = require('../modules/parser');
+const historyRepository = require('../repositories/historyRepository');
+const {Category} = require('../models');
+const {CategoryEvent} = require('../models');
+
+
 const peopleRepository = require('../repositories/peopleRepository');
 
 class Queue {
@@ -181,7 +186,15 @@ module.exports = {
             returnDateContent.push(deathEvent);
         }
         browser.close();
+        return returnDateContent;
+    },
 
+    searchHistory: async function (HistorySearchKeyword) {
+
+        let historyEvents = await historyRepository.findOneHistoryByName(HistorySearchKeyword)
+            .then(() => historyRepository.findAllHistory());
+
+        return historyEvents;
         for(var i = 0 ; i < returnDateContent.length ; i++) {
             returnDateContent[i].peopleSearchId = peopleSearchId;
             await peopleRepository.createChoicePeopleNameAndJob(returnDateContent[i]);
