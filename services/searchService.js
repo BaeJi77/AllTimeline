@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const yearParser = require('../modules/parser');
+const peopleRepository = require('../repositories/peopleRepository');
 
 class Queue {
     constructor() {
@@ -20,23 +21,31 @@ class Queue {
 }
 
 module.exports = {
+    // TODO : 찾은 데이터가 없는 경우에도 db에 없다고 넣어주기
     searchPerson: async function (personSearchKeyword) {
+        let decisionAlreadySearch = await peopleRepository.findPreviousSearchResult(personSearchKeyword);
+        if (decisionAlreadySearch !== null) {
+            console.log("기존에 검색한 결과 반환");
+            return await peopleRepository.findAllPeopleInformationByName(personSearchKeyword);
+        }
+
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto('https://people.search.naver.com/', {waitUntil: 'networkidle2', timeout: 5000});
         var gogo = 'https://people.search.naver.com/search.naver';   //link url 병합위함
         await page.type('#nx_query', personSearchKeyword);
 
-        console.log(personSearchKeyword);
-
         const allResultsSelector = '#search_form > fieldset > input';
         await page.waitForSelector(allResultsSelector);
         await page.click(allResultsSelector);
 
+        let insertNewPeople = await peopleRepository.createFirstSearchPeople(personSearchKeyword, 0);
+        let insertPeoplePrimaryId = insertNewPeople.dataValues.id;
+
         const resultSelector = 'a.name';
         try {
             await page.waitForSelector(resultSelector, {timeout: 3000});
-        } catch (err) {
+        } catch (err) { // TODO : 없는 경우 이 경우도 DB에 저장
             console.error(err);
             return [];
         }
@@ -44,18 +53,15 @@ module.exports = {
         await page.waitForSelector('#content > div > div.result_section > div.result_content');
 
         var dtArray = await page.evaluate(() => {
-            //var img = document.querySelectorAll('img.thmb_img');
             var titleNodeList = document.querySelectorAll(`a.name`);
             var job = document.querySelectorAll(`span.sub`);
-            var profile = document.querySelectorAll(`dl`);
             var titleLinkArray = [];
             for (var i = 0; i < titleNodeList.length; i++) {
                 titleLinkArray[i] = {
-                    title: titleNodeList[i].innerText.trim(),
+                    person_name: titleNodeList[i].innerText.trim(),
                     job: job[i].innerText.trim(),
                     link: titleNodeList[i].getAttribute("href"),
-                    profile: profile[i].innerText.trim(),
-                    imgurl: ""
+                    image: ""
                 };
             }
             return titleLinkArray;
@@ -68,15 +74,10 @@ module.exports = {
         }
 
         const profilePictureSelector = '#content > div > div.profile_wrap > div.thmb_wrap ';
-
-        var imgurl = [];
         var imgtmp = new Queue();
         while (qu.size() != 0) {
-            var imgurl = qu.dequeue();
-            //const newbrowser = await puppeteer.launch();
-            //page = await newbrowser.newPage();
-            await page.goto(imgurl, {waitUntil: 'networkidle2'});
-            //console.log("Imgurl open:" + imgurl);
+            var imgurl = qu.dequeue(); // 결과 JSON
+            await page.goto(imgurl, {waitUntil: 'networkidle2'});;
 
             await page.waitForSelector(profilePictureSelector);
             let profilePiceutre = await page.evaluate(() => {
@@ -85,37 +86,35 @@ module.exports = {
             });
 
             imgtmp.enqueue(profilePiceutre);
-            //browser.close();
-
         }
         browser.close();
 
         for (var i = 0; i < dtArray.length; i++) {
-            dtArray[i].imgurl = imgtmp.dequeue();
+            dtArray[i].image = imgtmp.dequeue();
+            dtArray[i].personId = insertPeoplePrimaryId;
+            await peopleRepository.createNameSearchResult(dtArray[i]);
         }
 
-        return dtArray;
+        return await peopleRepository.findAllPeopleInformationByName(personSearchKeyword);
     },
-
 
     /*
     * TODO : 1. 디비 저장하는 부분 / 2. 이전에 데이터가 있었는지 확인하는 루틴(db 구조 변경 요구) / 3. 사진 주기
     * */
-    searchDetailUrl: async function (Url) {
+
+    searchDetailUrl: async function (peopleSearchId, url) {
+        let decisionAlreadySearch = await peopleRepository.findPreviousDetailSearchResult(peopleSearchId);
+        if (decisionAlreadySearch !== null) {
+            console.log("기존에 검색한 결과 반환");
+            return await peopleRepository.findAllPeopleEventUsingByPeopleSearchId(peopleSearchId);
+        }
+
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto(Url, {waitUntil: 'networkidle2'});
-
-        console.log(Url);
+        await page.goto(url, {waitUntil: 'networkidle2'});
 
         const allResultsSelector = '#content > div > div.record_wrap > div:nth-child(2)';
-        //const profilePictureSelector = '#content > div > div.profile_wrap > div.thmb_wrap > a.thmb';
         const lifeDateSelector = '#content > div > div.profile_wrap > div.profile_dsc';
-
-        // await page.waitForSelector(profilePictureSelector);
-        // let profilePicture = await page.evaluate(() => {
-        //     return document.querySelector('img.thmb_img').getAttribute('src');
-        // });
 
         await page.waitForSelector(lifeDateSelector);
         let lifeDate = await page.evaluate(() => {
@@ -160,29 +159,34 @@ module.exports = {
             var object = dtArray[i];
             var newObject = {};
             newObject = yearParser.startEndYearParsing(object.date);
-            newObject.start = yearParser.convertYearMonthToYear(newObject.start.trim());
-            newObject.end = yearParser.convertYearMonthToYear(newObject.end.trim());
+            newObject.start_date = yearParser.convertYearMonthToYear(newObject.start_date.trim());
+            newObject.end_date = yearParser.convertYearMonthToYear(newObject.end_date.trim());
             newObject.event_name = object.content;
-            if (newObject.start === "-1" && newObject.end === "-1")
+            if (newObject.start_date === "-1" && newObject.end_date === "-1")
                 continue;
             returnDateContent.push(newObject);
         }
 
         var birthEvent = {};
-        birthEvent.start = birthYear;
-        birthEvent.end = -1;
+        birthEvent.start_date = birthYear;
+        birthEvent.end_date = -1;
         birthEvent.event_name = "출생";
         returnDateContent.push(birthEvent);
 
         if (lifeDateSplit.length === 2) {
             var deathEvent = {};
-            deathEvent.start = deathYear;
-            deathEvent.end = -1;
+            deathEvent.start_date = deathYear;
+            deathEvent.end_date = -1;
             deathEvent.event_name = "사망";
             returnDateContent.push(deathEvent);
         }
-
         browser.close();
-        return returnDateContent;
-    }
+
+        for(var i = 0 ; i < returnDateContent.length ; i++) {
+            returnDateContent[i].peopleSearchId = peopleSearchId;
+            await peopleRepository.createChoicePeopleNameAndJob(returnDateContent[i]);
+        }
+
+        return await peopleRepository.findAllPeopleEventUsingByPeopleSearchId(peopleSearchId);
+    },
 };
