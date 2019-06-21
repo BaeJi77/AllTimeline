@@ -1,5 +1,9 @@
 const puppeteer = require('puppeteer');
 const yearParser = require('../modules/parser');
+const historyRepository = require('../repositories/historyRepository');
+const {Category} = require('../models');
+const {CategoryEvent} = require('../models');
+
 
 class Queue {
     constructor() {
@@ -184,5 +188,13 @@ module.exports = {
 
         browser.close();
         return returnDateContent;
-    }
+    },
+
+    searchHistory: async function (HistorySearchKeyword) {
+
+        let historyEvents = await historyRepository.findOneHistoryByName(HistorySearchKeyword)
+            .then(() => historyRepository.findAllHistory());
+
+        return historyEvents;
+    },
 };

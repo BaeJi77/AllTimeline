@@ -7,6 +7,7 @@ var searchService = require('../services/searchService');
 router.get('/', running);
 router.post('/person', naverSearch);
 router.post('/personDetail', naverSearchDetail);
+router.post('/history', HistorySearchDetail);
 
 
 async function naverSearch(req, res, next) {
@@ -24,6 +25,12 @@ async function naverSearchDetail(req, res, next) {
 }
 
 
+async function HistorySearchDetail(req, res, next) {
+    let historySearchKeyword = req.body.historyEvent;
+    let searchResult = await searchService.searchHistory(historySearchKeyword);
+    // console.log(searchResult);
+    res.status(200).send(searchResult);
+}
 //실행함수만들기
 async function running(req, res, next) {
 
