@@ -5,17 +5,17 @@ module.exports = {
         var retObject = {};
         let parsingArray = date.split('~');
         if (parsingArray[0] === '' || parsingArray[0] === '\t' || parsingArray[0] === '\n') {
-            retObject.start = "-1";
-            retObject.end = "-1";
+            retObject.start_date = "-1";
+            retObject.end_date = "-1";
         } else if (parsingArray.length === 1) {
-            retObject.start = parsingArray[0];
-            retObject.end = "-1";
+            retObject.start_date = parsingArray[0];
+            retObject.end_date = "-1";
         } else if (parsingArray[1] === '' || parsingArray[1] === '\t' || parsingArray[1] === '\n') {
-            retObject.start = parsingArray[0];
-            retObject.end = nowYear;
+            retObject.start_date = parsingArray[0];
+            retObject.end_date = nowYear;
         } else {
-            retObject.start = parsingArray[0];
-            retObject.end = parsingArray[1];
+            retObject.start_date = parsingArray[0];
+            retObject.end_date = parsingArray[1];
         }
 
         return retObject;

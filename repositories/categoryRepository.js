@@ -1,18 +1,17 @@
 const {Category} = require('../models');
+const {CategoryEvent} = require('../models');
 
 module.exports = {
     findAllCategoryNames: async function () {
-        let result = await Category.findAll();
-        return result;
+        return await Category.findAll();
     },
 
     findOneCategoryById: async function (categoryId) {
-        let result = await Category.findDetailCategory({
+        return await CategoryEvent.findAll({
             where: {
                 id: categoryId
             }
         });
-        return result;
     },
 
     createCategoryWithNameAndType: async function (name, type) {
