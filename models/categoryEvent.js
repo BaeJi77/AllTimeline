@@ -1,23 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('categoryEvent', {
         event_name: {
-            type: DataTypes.STRING(20),
-            unique: true,
+            type: DataTypes.STRING,
         },
         descriptor: {
             type: DataTypes.STRING,
         },
         detail_url: {
             type: DataTypes.STRING,
-            validate: {
-                isUrl: true
-            }
         },
         picture: {
             type: DataTypes.STRING,
-            validate: {
-                isUrl: true
-            }
         },
         start_date: {
             type: DataTypes.INTEGER,
