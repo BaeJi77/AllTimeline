@@ -24,7 +24,8 @@ async function getCategory(req, res, next) {
 async function addCategory(req, res, next) {
     let categoryName = req.body.name;
     let categoryType = req.body.type;
-    let result = await categoryService.create(categoryName, categoryType);
+    let cateroryPicture = req.body.picture;
+    let result = await categoryService.create(categoryName, categoryType, cateroryPicture);
     res.status(201).send(result);
 }
 
