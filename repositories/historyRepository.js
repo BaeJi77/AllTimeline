@@ -1,11 +1,29 @@
 const {History} = require('../models');
 const {HistoryEvent} = require('../models');
+const {CategoryEvent} = require('../models');
 
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
-/*
-* TODO : find, create 부분 만들기 - 1. 사람과 직업리스트, 2. 선택한 사람과 그 연표
-* */
 module.exports = {
+    findHistoryFocusingWar: async function () {
+        return await CategoryEvent.findAll({
+            where:{
+                [Op.or] : [
+                    {
+                        event_name : {
+                            [Op.like] : "%전쟁%"
+                        }
+                    },
+                    {
+                        event_name : {
+                            [Op.like] : "%war%"
+                        }
+                    }
+                ]
+            }
+        })
+    },
 
     findOneHistoryByName: async function (searchName) {
         let historyInformation = await History.findOne({
@@ -27,6 +45,4 @@ module.exports = {
         });
     }
 
-
-    // TODO : 찾은 데이터가 없는 경우에도 db에 없다고 넣어주기
 };

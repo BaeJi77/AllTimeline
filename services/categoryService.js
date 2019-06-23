@@ -6,7 +6,7 @@ module.exports = {
     },
 
     findDetailCategory: async function (categoryId) {
-        return await categoryRepository.findOneCategoryById(categoryId);
+        return await categoryRepository.findAllCategoryEventById(categoryId);
     },
 
     create: async function (name, type) {

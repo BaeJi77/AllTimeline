@@ -4,7 +4,6 @@ const puppeteer = require('puppeteer');
 
 var searchService = require('../services/searchService');
 
-router.get('/', running);
 router.post('/person', naverSearch);
 router.post('/personDetail', naverSearchDetail);
 router.post('/history', HistorySearchDetail);
@@ -23,5 +22,13 @@ async function naverSearchDetail(req, res, next) {
     let searchResult = await searchService.searchDetailUrl(peopleSearchId, choiceUrl);
     res.status(200).send(searchResult);
 }
+
+
+async function HistorySearchDetail(req, res, next) {
+    let historySearchKeyword = req.body.historyEvent;
+    let searchResult = await searchService.searchHistory(historySearchKeyword);
+    res.status(200).send(searchResult);
+}
+
 
 module.exports = router;

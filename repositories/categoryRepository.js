@@ -6,10 +6,10 @@ module.exports = {
         return await Category.findAll();
     },
 
-    findOneCategoryById: async function (categoryId) {
+    findAllCategoryEventById: async function (categoryId) {
         return await CategoryEvent.findAll({
             where: {
-                id: categoryId
+                categoryId : categoryId
             }
         });
     },
@@ -19,5 +19,9 @@ module.exports = {
             category_name: name,
             type: type
         });
+    },
+
+    createCategoryEvent : async function (eachEvent) {
+        return CategoryEvent.create(eachEvent);
     }
 };

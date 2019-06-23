@@ -190,6 +190,7 @@ module.exports = {
     },
 
     searchHistory: async function (HistorySearchKeyword) {
+        return await historyRepository.findHistoryFocusingWar();
 
         let historyEvents = await historyRepository.findOneHistoryByName(HistorySearchKeyword)
             .then(() => historyRepository.findAllHistory());
