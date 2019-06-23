@@ -9,6 +9,7 @@ module.exports = {
         await categoryRepository.createCategoryWithNameAndType("세계사", 1, "https://upload.wikimedia.org/wikipedia/commons/d/d8/Winkel-tripel-projection.jpg");
         await categoryRepository.createCategoryWithNameAndType("음악사", 1, "https://upload.wikimedia.org/wikipedia/commons/b/b5/Bach.jpg");
         await categoryRepository.createCategoryWithNameAndType("미술사", 1, "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/270px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg");
+        await categoryRepository.createCategoryWithNameAndType("기술사", 1, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDTRDuR-o3YotT429wdn1mdmoKQ9VvlqHrVfCaoW-_uawgj7KG");
 
         var wookbookKorean = XLSX.readFile(__dirname+'/korean_history.xlsx');
         var wooksheetKorean = wookbookKorean.Sheets["Sheet1"];
@@ -107,6 +108,30 @@ module.exports = {
             newObject.duration = wooksheet[duration].v;
             newObject.categoryId = 4;
             // console.log(newObject);
+            await categoryRepository.createCategoryEvent(newObject);
+        }
+
+        var wookbook = XLSX.readFile(__dirname+'/technology_history.xlsx');
+        var wooksheet = wookbook.Sheets["Sheet1"];
+
+        // 1 ~ 12
+        for(var i = 1 ; i <=  12 ; i++) {
+            var newObject = {};
+            var start_date = 'A' + i;
+            var event_name = 'B' + i;
+            var descriptor = 'C' + i;
+            var detail_url = 'D' + i;
+            var picture = 'E' + i;
+            var end_date = 'F' + i;
+            var duration = 'G' + i;
+            newObject.start_date = wooksheet[start_date].v;
+            newObject.event_name = wooksheet[event_name].v;
+            newObject.descriptor = wooksheet[descriptor].v;
+            newObject.detail_url = wooksheet[detail_url].v;
+            newObject.picture = wooksheet[picture].v;
+            newObject.end_date = wooksheet[end_date].v;
+            newObject.duration = wooksheet[duration].v;
+            newObject.categoryId = 5;
             await categoryRepository.createCategoryEvent(newObject);
         }
     }

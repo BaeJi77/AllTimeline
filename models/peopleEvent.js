@@ -10,13 +10,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             validate: {
                 isUrl: true
-            }
+            },
         },
         picture: {
             type: DataTypes.STRING,
-            validate: {
-                isUrl: true
-            }
+            defaultValue : -1,
         },
         start_date: {
             type: DataTypes.INTEGER,
