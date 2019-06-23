@@ -186,21 +186,28 @@ module.exports = {
             returnDateContent.push(deathEvent);
         }
         browser.close();
-        return returnDateContent;
+
+        for (var i = 0 ; i < returnDateContent.length ; i++) {
+            returnDateContent[i].peopleSearchId = peopleSearchId;
+            console.log(returnDateContent[i]);
+            await peopleRepository.createChoicePeopleNameAndJob(returnDateContent[i]);
+        }
+
+        return await peopleRepository.findAllPeopleEventUsingByPeopleSearchId(peopleSearchId);
     },
 
     searchHistory: async function (HistorySearchKeyword) {
         return await historyRepository.findHistoryFocusingWar();
 
-        let historyEvents = await historyRepository.findOneHistoryByName(HistorySearchKeyword)
-            .then(() => historyRepository.findAllHistory());
-
-        return historyEvents;
-        for(var i = 0 ; i < returnDateContent.length ; i++) {
-            returnDateContent[i].peopleSearchId = peopleSearchId;
-            await peopleRepository.createChoicePeopleNameAndJob(returnDateContent[i]);
-        }
-
-        return await peopleRepository.findAllPeopleEventUsingByPeopleSearchId(peopleSearchId);
+        // let historyEvents = await historyRepository.findOneHistoryByName(HistorySearchKeyword)
+        //     .then(() => historyRepository.findAllHistory());
+        //
+        // return historyEvents;
+        // for(var i = 0 ; i < returnDateContent.length ; i++) {
+        //     returnDateContent[i].peopleSearchId = peopleSearchId;
+        //     await peopleRepository.createChoicePeopleNameAndJob(returnDateContent[i]);
+        // }
+        //
+        // return await peopleRepository.findAllPeopleEventUsingByPeopleSearchId(peopleSearchId);
     },
 };

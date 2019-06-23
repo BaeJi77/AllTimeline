@@ -9,7 +9,7 @@ module.exports = {
         return await categoryRepository.findAllCategoryEventById(categoryId);
     },
 
-    create: async function (name, type) {
-        return categoryRepository.createCategoryWithNameAndType(name, type);
+    create: async function (name, type, picture) {
+        return categoryRepository.createCategoryWithNameAndType(name, type, picture);
     }
 };
