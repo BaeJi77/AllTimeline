@@ -115,7 +115,7 @@ module.exports = {
         var wooksheet = wookbook.Sheets["Sheet1"];
 
         // 1 ~ 12
-        for(var i = 1 ; i <=  12 ; i++) {
+        for(var i = 1 ; i <=  11 ; i++) {
             var newObject = {};
             var start_date = 'A' + i;
             var event_name = 'B' + i;
