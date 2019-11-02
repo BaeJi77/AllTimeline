@@ -19,7 +19,7 @@
     "mysql2": "^1.6.5",
     "objects-to-csv": "^1.2.1",
     "puppeteer": "^1.16.0",
-    "sequelize": "^5.8.2",
+    "sequelize": "^5.15.1",
     "xlsx": "^0.14.3"
   }
 }
